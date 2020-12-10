@@ -19,7 +19,32 @@ const resolvers = {
             const userId = await jwt.verify(token, process.env.SECRET)
 
             return userId;
+        },
+
+        getProducts: async () => {
+            try {
+                const products = await Product.find({}) // Passing the empty object will bring all the products
+
+                return products;
+
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        getProductById: async (_, { id }) => {
+
+            const product = await Product.findById(id);
+
+            if (!product) {
+                throw new Error('Unable to find product')
+
+            }
+
+            return product;
+
         }
+
     },
     Mutation: {
         newUser: async (_, { input }) => {

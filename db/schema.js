@@ -43,8 +43,15 @@ input ProductInput {
     price: Float!
 }
 
-type Query {
+type Query { 
+
+    # User
     getUser (token: String!): User
+
+    # Product
+
+    getProducts: [Product]
+    getProductById(id: ID!) : Product
 }
 
 type Mutation {
