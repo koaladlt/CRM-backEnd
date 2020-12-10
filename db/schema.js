@@ -13,6 +13,14 @@ type User {
     created: String
 }
 
+type Product {
+    id: ID
+    name: String
+    stock: Int
+    price: Float
+    created: String
+}
+
 type Token {
     token: String
 }
@@ -29,13 +37,24 @@ input AuthenticateInput {
     password: String!
 }
 
+input ProductInput {
+    name: String!
+    stock: Int!
+    price: Float!
+}
+
 type Query {
     getUser (token: String!): User
 }
 
 type Mutation {
+
+    # User
     newUser(input: UserInput) : User
     authenticateUser(input: AuthenticateInput) : Token
+
+    #Product
+    newProduct(input: ProductInput) : Product
 }
 
 `
