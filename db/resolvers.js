@@ -38,7 +38,6 @@ const resolvers = {
 
             if (!product) {
                 throw new Error('Unable to find product')
-
             }
 
             return product;
@@ -114,6 +113,34 @@ const resolvers = {
                 console.log(error)
 
             }
+        },
+
+        updateProduct: async (_, { id, input }) => {
+
+            let product = await Product.findById(id);
+
+            if (!product) {
+                throw new Error('unable to update Product')
+            }
+
+            // save db
+
+            product = await Product.findOneAndUpdate({ _id: id }, input, { new: true })
+
+            return product;
+        },
+
+        deleteProduct: async (_, { id }) => {
+            let product = await Product.findById(id);
+
+            if (!product) {
+                throw new Error('unable to delete product')
+            }
+
+            await Product.findOneAndDelete({ _id: id });
+
+            return "Product has been deleted";
+
         }
     }
 }
