@@ -13,6 +13,10 @@ type User {
     created: String
 }
 
+type Token {
+    token: String
+}
+
 input UserInput {
     name: String!
     lastName: String!
@@ -20,12 +24,18 @@ input UserInput {
     password: String!
 }
 
+input AuthenticateInput {
+    email: String!
+    password: String!
+}
+
 type Query {
-    obtenerCurso: String
+    getUser (token: String!): User
 }
 
 type Mutation {
     newUser(input: UserInput) : User
+    authenticateUser(input: AuthenticateInput) : Token
 }
 
 `

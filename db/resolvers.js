@@ -1,12 +1,24 @@
 const User = require('../models/User')
 const bcryptjs = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+require('dotenv').config({ path: 'variables.env' });
 
+const createToken = (user, secretWord, expiresIn) => {
+
+    const { id, email, name, lastName } = user
+    return jwt.sign({ id }, secretWord, { expiresIn })
+
+}
 
 //resolvers 
 
 const resolvers = {
     Query: {
-        obtenerCurso: () => '...'
+        getUser: async (_, { token }) => {
+            const userId = await jwt.verify(token, process.env.SECRET)
+
+            return userId;
+        }
     },
     Mutation: {
         newUser: async (_, { input }) => {
@@ -34,6 +46,31 @@ const resolvers = {
             } catch (error) {
                 console.log('Something went wrong', error)
             }
+        },
+
+        authenticateUser: async (_, { input }) => {
+            const { email, password } = input;
+
+            //Checking if user exists
+
+            const userExists = await User.findOne({ email });
+            if (!userExists) {
+                throw new Error('User does not exist')
+            }
+
+            //Checking if password matches
+
+            const passwordMatches = await bcryptjs.compare(password, userExists.password)
+            if (!passwordMatches) {
+                throw new Error('Your email or password are incorrect')
+            }
+
+            //Create the token 
+
+            return {
+                token: createToken(userExists, process.env.SECRET, '24h')
+            }
+
         }
     }
 }
