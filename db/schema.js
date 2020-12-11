@@ -21,6 +21,16 @@ type Product {
     created: String
 }
 
+type Client {
+    id: ID
+    name: String
+    lastName: String
+    company: String
+    email: String
+    phone: String
+    seller: ID
+}
+
 type Token {
     token: String
 }
@@ -41,6 +51,15 @@ input ProductInput {
     name: String!
     stock: Int!
     price: Float!
+}
+
+input ClientInput {
+    name: String!
+    lastName: String!
+    company: String!
+    email: String!
+    phone: String
+
 }
 
 type Query { 
@@ -64,6 +83,9 @@ type Mutation {
     newProduct(input: ProductInput) : Product
     updateProduct(id: ID!, input: ProductInput) : Product
     deleteProduct(id:ID!) : String
+
+    # Client
+    newClient(input: ClientInput): Client
 }
 
 `

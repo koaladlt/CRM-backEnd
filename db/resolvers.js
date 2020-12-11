@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const Product = require('../models/Product')
+const Client = require('../models/Client')
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config({ path: 'variables.env' });
@@ -141,6 +142,29 @@ const resolvers = {
 
             return "Product has been deleted";
 
+        },
+
+        newClient: async (_, { input }, ctx) => {
+
+            const client = await Client.findOne({ email });
+            if (client) {
+                throw new Error('Client has already been declared')
+            }
+
+            try {
+
+                const newClient = new Client(input);
+
+                newClient.seller = ctx.user.id
+
+                const result = await Client.save()
+
+                return result;
+
+            } catch (error) {
+
+                console.log(error)
+            }
         }
     }
 }
