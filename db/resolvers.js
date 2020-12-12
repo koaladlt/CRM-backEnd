@@ -146,18 +146,22 @@ const resolvers = {
 
         newClient: async (_, { input }, ctx) => {
 
+            const { email } = input
+
+            console.log("este es el ctx: ", ctx)
+
             const client = await Client.findOne({ email });
+
             if (client) {
                 throw new Error('Client has already been declared')
             }
 
+            const newClient = new Client(input);
+            newClient.seller = ctx.user.id
+
             try {
 
-                const newClient = new Client(input);
-
-                newClient.seller = ctx.user.id
-
-                const result = await Client.save()
+                const result = await newClient.save()
 
                 return result;
 
