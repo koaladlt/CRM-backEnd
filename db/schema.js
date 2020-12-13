@@ -71,6 +71,12 @@ type Query {
 
     getProducts: [Product]
     getProductById(id: ID!) : Product
+
+    #Clients 
+
+    getClients: [Client]
+    getClientsBySeller: [Client]
+    getClientById(id: ID!): Client
 }
 
 type Mutation {
@@ -86,6 +92,8 @@ type Mutation {
 
     # Client
     newClient(input: ClientInput): Client
+    updateClient(id: ID!, input: ClientInput): Client
+    deleteClient(id:ID!): String
 }
 
 `

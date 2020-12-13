@@ -43,6 +43,44 @@ const resolvers = {
 
             return product;
 
+        },
+
+        getClients: async () => {
+            try {
+
+                const clients = await Client.find({});
+                return clients;
+
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        getClientsBySeller: async (_, { }, ctx) => {
+
+            try {
+                const clients = await Client.find({ seller: ctx.user.id.toString() })
+                return clients;
+            } catch (error) {
+                console.log(error)
+
+            }
+        },
+
+        getClientById: async (_, { id }, ctx) => {
+
+            const client = await Client.findById(id);
+
+            if (!client) {
+                throw new Error('We couldnt found the client ')
+            }
+
+            if (client.seller.toString() !== ctx.user.id) {
+                throw new Error('You dont have the credentials')
+            }
+
+            return client;
+
         }
 
     },
@@ -169,6 +207,39 @@ const resolvers = {
 
                 console.log(error)
             }
+        },
+
+        updateClient: async (_, { id, input }, ctx) => {
+
+            let client = await Client.findById(id);
+
+            if (!client) {
+                throw new Error('This client doesnt exist')
+            }
+
+            if (client.seller.toString() !== ctx.user.id) {
+                throw new Error('You dont have the credentials')
+            }
+
+            await Client.findOneAndUpdate({ _id: id }, input, { new: true });
+
+            return client;
+        },
+
+        deleteClient: async (_, { id }, ctx) => {
+            let client = await Client.findById(id);
+
+            if (!client) {
+                throw new Error('This client doesnt exist')
+            }
+
+            if (client.seller.toString() !== ctx.user.id) {
+                throw new Error('You dont have the credentials')
+            }
+
+            await Client.findOneAndDelete({ _id: id })
+
+            return "Client has been deleted"
         }
     }
 }
