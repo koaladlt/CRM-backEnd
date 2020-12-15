@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const Product = require('../models/Product')
 const Client = require('../models/Client')
+const Orders = require('../models/Orders')
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config({ path: 'variables.env' });
@@ -240,6 +241,53 @@ const resolvers = {
             await Client.findOneAndDelete({ _id: id })
 
             return "Client has been deleted"
+        },
+
+        newOrder: async (_, { input }, ctx) => {
+
+            const { client } = input
+
+            let clientExists = await Client.findById(client);
+
+            if (!clientExists) {
+                throw new Error('The client doesnt exist')
+            }
+
+            if (clientExists.seller.toString() !== ctx.user.id) {
+                throw new Error('You dont have the credentials')
+            }
+
+            //Checking stock
+
+            for await (const articulo of input.order) {
+
+                // for await itera sobre cada elemento de manera asincrona
+
+                const { id } = articulo;
+
+                const product = await Product.findById(id);
+
+
+                if (articulo.amount > product.stock) {
+                    throw new Error(`The product: ${product.name} isn't in stock`)
+                }
+                else {
+                    product.stock = product.stock - articulo.amount;
+
+                    await product.save();
+                }
+
+            }
+
+            const newOrder = new Orders(input);
+
+            newOrder.seller = ctx.user.id;
+
+            const result = await newOrder.save()
+
+            return result;
+
+
         }
     }
 }

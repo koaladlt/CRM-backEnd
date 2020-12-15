@@ -31,6 +31,22 @@ type Client {
     seller: ID
 }
 
+type Order {
+    id: ID
+    order: [OrderGroup]
+    total: Float
+    client: ID
+    seller: ID
+    date: String
+    state: StateOrder
+}
+
+type OrderGroup {
+    id: ID
+    amount: Int
+}
+
+
 type Token {
     token: String
 }
@@ -60,6 +76,26 @@ input ClientInput {
     email: String!
     phone: String
 
+}
+
+input OrderProductInput {
+    id: ID
+    amount: Int
+
+}
+
+input OrdersInput {
+
+    order: [OrderProductInput]
+    total: Float!
+    client: ID!
+    state: StateOrder
+}
+
+enum StateOrder {
+    PENDING
+    COMPLETE
+    CANCELLED
 }
 
 type Query { 
@@ -94,6 +130,9 @@ type Mutation {
     newClient(input: ClientInput): Client
     updateClient(id: ID!, input: ClientInput): Client
     deleteClient(id:ID!): String
+
+    # Orders
+    newOrder(input: OrdersInput): Order
 }
 
 `
