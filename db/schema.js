@@ -87,8 +87,8 @@ input OrderProductInput {
 input OrdersInput {
 
     order: [OrderProductInput]
-    total: Float!
-    client: ID!
+    total: Float
+    client: ID
     state: StateOrder
 }
 
@@ -113,6 +113,13 @@ type Query {
     getClients: [Client]
     getClientsBySeller: [Client]
     getClientById(id: ID!): Client
+
+    # Orders
+
+    getOrders: [Order]
+    getOrdersBySeller: [Order]
+    getOrderById(id: ID!): Order
+    getOrdersByState(state: String!): [Order]
 }
 
 type Mutation {
@@ -133,6 +140,9 @@ type Mutation {
 
     # Orders
     newOrder(input: OrdersInput): Order
+    updateOrder(id: ID!, input: OrdersInput): Order
+    deleteOrder(id: ID!): String
+    
 }
 
 `

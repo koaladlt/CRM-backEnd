@@ -82,7 +82,49 @@ const resolvers = {
 
             return client;
 
+        },
+
+        getOrders: async () => {
+            try {
+                const orders = await Orders.find({});
+
+                return orders;
+
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        getOrdersBySeller: async (_, { }, ctx) => {
+            try {
+                const orders = await Orders.find({ seller: ctx.user.id })
+                return orders;
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        getOrderById: async (_, { id }, ctx) => {
+            const order = await Orders.findById(id);
+            if (!order) {
+                throw new Error('We couldnt find the order')
+            }
+
+            if (order.seller.toString() !== ctx.user.id) {
+                throw new Error('You dont have the credentials')
+            }
+
+            return order;
+        },
+
+        getOrdersByState: async (_, { state }, ctx) => {
+
+            const orders = await Orders.find({ seller: ctx.user.id, state: state })
+
+            return orders;
         }
+
+
 
     },
     Mutation: {
@@ -288,6 +330,70 @@ const resolvers = {
             return result;
 
 
+        },
+
+        updateOrder: async (_, { id, input }, ctx) => {
+            const { client } = input;
+
+            const orderExist = await Orders.findById(id);
+
+            if (!orderExist) {
+                throw new Error('The order doesnt exist')
+            }
+
+            const clientExist = await Client.findById(client);
+
+            if (!clientExist) {
+                throw new Error('The client doesnt exist')
+            }
+
+            if (clientExist.seller.toString() !== ctx.user.id) {
+                throw new Error('You dont have the credentials')
+            }
+
+            if (input.order) {
+                for await (const articulo of input.order) {
+
+                    const { id } = articulo;
+
+                    const product = await Product.findById(id);
+
+
+                    if (articulo.amount > product.stock) {
+                        throw new Error(`The product: ${product.name} isn't in stock`)
+                    }
+                    else {
+                        product.stock = product.stock - articulo.amount;
+
+                        await product.save();
+                    }
+
+                }
+
+            }
+
+
+
+            const result = await Orders.findOneAndUpdate({ _id: id }, input, { new: true });
+
+            return result;
+        },
+
+        deleteOrder: async (_, { id }, ctx) => {
+
+            let order = await Orders.findById(id);
+
+            if (!order) {
+                throw new Error('This order doesnt exist')
+            }
+
+            if (order.seller.toString() !== ctx.user.id) {
+                throw new Error('You dont have the credentials')
+            }
+
+            await Orders.findOneAndDelete({ _id: id })
+
+            return "The order has been deleted"
         }
     }
 }
