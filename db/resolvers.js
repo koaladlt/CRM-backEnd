@@ -122,6 +122,67 @@ const resolvers = {
             const orders = await Orders.find({ seller: ctx.user.id, state: state })
 
             return orders;
+        },
+
+        getBestClients: async () => {
+
+            const clients = await Orders.aggregate([
+                { $match: { state: 'COMPLETE' } },
+                {
+                    $group: {
+                        _id: '$client',
+                        total: { $sum: '$total' }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'clients',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: "client"
+                    },
+
+
+
+                },
+                { $sort: { total: -1 } }
+
+
+            ]);
+
+            return clients;
+        },
+
+        getBestSellers: async () => {
+
+            const sellers = await Orders.aggregate([
+                { $match: { state: 'COMPLETE' } },
+                {
+                    $group: {
+                        _id: '$seller',
+                        total: { $sum: '$total' }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'seller'
+                    }
+                },
+
+                { $limit: 3 },
+                { $sort: { total: -1 } }
+            ]);
+
+            return sellers;
+        },
+
+        searchProduct: async (_, { text }) => {
+            const products = await Product.find({ $text: { $search: text } })
+
+            return products;
         }
 
 

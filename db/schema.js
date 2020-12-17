@@ -51,6 +51,16 @@ type Token {
     token: String
 }
 
+type TopClient {
+    total: Float
+    client: [Client]
+}
+
+type TopSeller {
+    total: Float
+    seller: [User]
+}
+
 input UserInput {
     name: String!
     lastName: String!
@@ -120,6 +130,12 @@ type Query {
     getOrdersBySeller: [Order]
     getOrderById(id: ID!): Order
     getOrdersByState(state: String!): [Order]
+
+    # AdvancedSearch
+
+    getBestClients: [TopClient]
+    getBestSellers: [TopSeller]
+    searchProduct(text: String!): [Product]
 }
 
 type Mutation {
