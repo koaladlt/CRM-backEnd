@@ -111,7 +111,7 @@ enum StateOrder {
 type Query { 
 
     # User
-    getUser (token: String!): User
+    getUser: User
 
     # Product
 
