@@ -7,9 +7,9 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config({ path: 'variables.env' });
 
 const createToken = (user, secretWord, expiresIn) => {
-
+    console.log(user)
     const { id, email, name, lastName } = user
-    return jwt.sign({ id }, secretWord, { expiresIn })
+    return jwt.sign({ id, email, name, lastName }, secretWord, { expiresIn })
 
 }
 
