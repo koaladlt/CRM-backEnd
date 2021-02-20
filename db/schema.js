@@ -44,6 +44,8 @@ type Order {
 type OrderGroup {
     id: ID
     amount: Int
+    name: String
+    price: Float
 }
 
 
