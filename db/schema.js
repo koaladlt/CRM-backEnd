@@ -93,6 +93,8 @@ input ClientInput {
 input OrderProductInput {
     id: ID
     amount: Int
+    name: String
+    price: Float
 
 }
 
