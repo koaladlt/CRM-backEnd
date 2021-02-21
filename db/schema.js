@@ -35,7 +35,7 @@ type Order {
     id: ID
     order: [OrderGroup]
     total: Float
-    client: ID
+    client: Client
     seller: ID
     date: String
     state: StateOrder
