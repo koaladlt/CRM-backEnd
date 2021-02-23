@@ -154,12 +154,11 @@ const resolvers = {
         },
 
         getBestSellers: async () => {
-
             const sellers = await Orders.aggregate([
-                { $match: { state: 'COMPLETE' } },
+                { $match: { state: "COMPLETE" } },
                 {
                     $group: {
-                        _id: '$seller',
+                        _id: "$seller",
                         total: { $sum: '$total' }
                     }
                 },
@@ -171,9 +170,12 @@ const resolvers = {
                         as: 'seller'
                     }
                 },
-
-                { $limit: 3 },
-                { $sort: { total: -1 } }
+                {
+                    $limit: 3
+                },
+                {
+                    $sort: { total: -1 }
+                }
             ]);
 
             return sellers;
