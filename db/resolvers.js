@@ -4,6 +4,9 @@ const Client = require('../models/Client')
 const Orders = require('../models/Orders')
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const nodemailer = require('nodemailer');
+const ejs = require("ejs");
+
 require('dotenv').config({ path: 'variables.env' });
 
 const createToken = (user, secretWord, expiresIn) => {
@@ -212,7 +215,47 @@ const resolvers = {
             try {
                 const user = new User(input)
                 user.save(); //Saving user in db
-                return user;
+
+                var smtpTransport = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    auth: {
+                        user: 'ecomerce0410@gmail.com',
+                        pass: "henry1234."
+                    }
+                });
+
+                smtpTransport.verify((error, success) => {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Server is ready to take messages');
+                    }
+                });
+
+                ejs.renderFile(__dirname + "/NewUser.ejs", { name: user.name }, function (err, data) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        var mainOptions = {
+                            to: email,
+                            from: 'Manuel de la Torre <foo@blurdybloop.com>',
+                            subject: `Hello ${user.name}!`,
+                            html: data,
+                        };
+                        smtpTransport.sendMail(mainOptions, function (err, info) {
+                            if (err) {
+                                res.json({
+                                    msg: 'fail'
+                                })
+                            } else {
+                                res.json({
+                                    msg: 'success'
+                                })
+                            }
+                        });
+                    }
+                })
+
             } catch (error) {
                 console.log('Something went wrong', error)
             }
